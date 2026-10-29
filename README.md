@@ -103,7 +103,12 @@ These are not mine. Each folder keeps its original licence file where the source
 | [banner-design](skills/banner-design/SKILL.md) | Social, ad and hero banners | same as above | MIT |
 | [slides](skills/slides/SKILL.md) | HTML presentations with Chart.js | same as above | MIT |
 
-Changes from the sources: the `ui-ux-pro-max` script paths point at `~/.claude/skills/ui-ux-pro-max/scripts/` instead of a plugin-only variable. Nothing else was edited.
+Changes from the sources:
+
+- `ui-ux-pro-max`: script paths point at `~/.claude/skills/ui-ux-pro-max/scripts/` instead of a plugin-only variable.
+- `responsive-craft`: the preview server (`scripts/serve-static.js`) now listens on 127.0.0.1 only, sends no `Access-Control-Allow-Origin: *` header, refuses dotfiles such as `.env` and `.git`, and ignores the query string when finding the file (before this, the preview page always returned 404).
+
+Nothing else was edited.
 
 If you wrote one of these and want it removed or credited differently, open an issue.
 

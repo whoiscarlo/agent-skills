@@ -67,7 +67,6 @@ function serve(port) {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
         'Connection': 'keep-alive',
-        'Access-Control-Allow-Origin': '*',
       });
       res.write('data: connected\n\n');
       reloadClients.push(res);
@@ -78,7 +77,14 @@ function serve(port) {
       return;
     }
 
-    let filePath = path.resolve(rootDir, decodeURIComponent(req.url).replace(/^\/+/, ''));
+    // Never serve dotfiles or dot-folders (.env, .git)
+    if (decodeURIComponent(req.url.split("?")[0]).split(/[\/\\]/).some((part) => part.startsWith('.'))) {
+      res.writeHead(403);
+      res.end('Forbidden');
+      return;
+    }
+
+    let filePath = path.resolve(rootDir, decodeURIComponent(req.url.split("?")[0]).replace(/^\/+/, ''));
 
     // Default to index.html for directory requests
     if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
@@ -112,10 +118,10 @@ function serve(port) {
         } else {
           html += LIVE_RELOAD_SCRIPT;
         }
-        res.writeHead(200, { 'Content-Type': contentType, 'Access-Control-Allow-Origin': '*' });
+        res.writeHead(200, { 'Content-Type': contentType });
         res.end(html);
       } else {
-        res.writeHead(200, { 'Content-Type': contentType, 'Access-Control-Allow-Origin': '*' });
+        res.writeHead(200, { 'Content-Type': contentType });
         res.end(data);
       }
     });
@@ -130,7 +136,7 @@ function serve(port) {
     }
   });
 
-  server.listen(port, () => {
+  server.listen(port, '127.0.0.1', () => {
     // Output the port on its own line so the launcher can parse it
     console.log(`SERVING_PORT:${port}`);
     console.log(`Serving ${rootDir} at http://localhost:${port}`);
